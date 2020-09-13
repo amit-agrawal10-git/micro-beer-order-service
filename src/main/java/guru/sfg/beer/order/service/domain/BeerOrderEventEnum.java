@@ -15,19 +15,10 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package guru.sfg.beer.order.service.web.model;
+package guru.sfg.beer.order.service.domain;
 
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-
-public class BeerOrderPagedList extends PageImpl<BeerOrderDto> {
-    public BeerOrderPagedList(List<BeerOrderDto> content, Pageable pageable, long total) {
-        super(content, pageable, total);
-    }
-
-    public BeerOrderPagedList(List<BeerOrderDto> content) {
-        super(content);
-    }
+public enum BeerOrderEventEnum {
+    VALIDATE_ORDER, VALIDATION_PASSED, VALIDATION_FAILED,
+    ALLOCATION_SUCCESS, ALLOCATION_NO_INVENTORY, ALLOCATION_FAILED,
+    BEERORDER_PICKED_UP
 }
