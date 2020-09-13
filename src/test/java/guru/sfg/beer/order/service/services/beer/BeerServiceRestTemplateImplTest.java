@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@Disabled // utility for manual testing
+@Disabled // utility for manual testing
 @SpringBootTest
 class BeerServiceRestTemplateImplTest {
 
