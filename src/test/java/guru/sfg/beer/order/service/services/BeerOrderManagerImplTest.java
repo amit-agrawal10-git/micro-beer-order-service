@@ -15,6 +15,7 @@ import guru.sfg.beer.order.service.repositories.CustomerRepository;
 import guru.sfg.beer.order.service.services.beer.BeerServiceRestTemplateImpl;
 import guru.sfg.brewery.model.BeerDto;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,16 +85,13 @@ class BeerOrderManagerImplTest {
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
         System.out.println("Started with savedBeerOrder id: "+savedBeerOrder.getId());
 
-        System.out.println("Sleep");
-        Thread.sleep(5000);
-        System.out.println("Awake");
+        Awaitility.await().untilAsserted(()->{
+            BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+            assertEquals(BeerOrderStatusEnum.ALLOCATED,foundOrder.getOrderStatus());
+        });
 
+        BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
-        BeerOrder savedBeerOrder2 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
-        System.out.println("Started with savedBeerOrder2 id: "+savedBeerOrder2.getId());
-
-        assertNotNull(savedBeerOrder);
-        assertEquals(BeerOrderStatusEnum.ALLOCATED,savedBeerOrder2.getOrderStatus());
     }
 
     private BeerOrder createBeerOrder(){
