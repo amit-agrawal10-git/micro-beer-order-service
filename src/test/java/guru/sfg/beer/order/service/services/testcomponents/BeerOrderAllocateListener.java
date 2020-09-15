@@ -19,13 +19,20 @@ public class BeerOrderAllocateListener {
 
     @JmsListener(destination = JMSConfig.ALLOCATE_ORDER_REQUEST_QUEUE)
     public void listener(BeerOrderDto beerOrderDto){
+        Boolean sendResponse = true;
+
+        if(beerOrderDto.getCustomerRef().equals("dont-allocate"))
+            sendResponse = false;
+
         beerOrderDto.getBeerOrderLines().get(0).setQuantityAllocated(beerOrderDto.getBeerOrderLines().get(0).getOrderQuantity());
         AllocationResult allocationResult = AllocationResult.builder()
                 .beerOrderDto(beerOrderDto)
                 .errorOccurred(false)
                 .partialAllocation(false)
                 .build();
+        if(sendResponse)
         jmsTemplate.convertAndSend(JMSConfig.ALLOCATE_ORDER_RESPONSE_QUEUE,allocationResult);
     }
+
 
 }
