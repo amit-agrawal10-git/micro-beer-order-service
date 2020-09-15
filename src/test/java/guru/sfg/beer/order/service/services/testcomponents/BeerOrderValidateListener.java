@@ -20,9 +20,12 @@ public class BeerOrderValidateListener {
 
     @JmsListener(destination = JMSConfig.VALIDATE_ORDER_REQUEST_QUEUE)
     public void listener(BeerOrderDto beerOrderDto){
-        System.out.println("I RAN.................: "+beerOrderDto);
+        Boolean isValid = true;
+        if(beerOrderDto.getCustomerRef().equals("failed-validation"))
+            isValid = false;
+
         ActionResult actionResult = ActionResult.builder()
-                .isSuccessful(true)
+                .isSuccessful(isValid)
                 .id(beerOrderDto.getId()).build();
         jmsTemplate.convertAndSend(JMSConfig.VALIDATE_ORDER_RESPONSE_QUEUE,actionResult);
     }

@@ -90,13 +90,89 @@ class BeerOrderManagerImplTest {
             assertEquals(BeerOrderStatusEnum.ALLOCATED,foundOrder.getOrderStatus());
         });
 
-        BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+        Awaitility.await().untilAsserted(()->{
+            BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+            BeerOrderLine beerOrderLine = foundOrder.getBeerOrderLines().iterator().next();
+            assertEquals(beerOrderLine.getOrderQuantity(),beerOrderLine.getQuantityAllocated());
+        });
+
+        BeerOrder finalBeerOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+
+        assertNotNull(finalBeerOrder);
+        assertEquals(BeerOrderStatusEnum.ALLOCATED,finalBeerOrder.getOrderStatus());
+        finalBeerOrder.getBeerOrderLines().forEach(o ->
+                assertEquals(o.getOrderQuantity(),o.getQuantityAllocated())
+                );
+
+    }
+
+    @Test
+    void testValidationException() throws JsonProcessingException, InterruptedException {
+        BeerDto beerDto = BeerDto.builder().id(beerId).upc("12345").build();
+        wireMockServer.stubFor(get(BeerServiceRestTemplateImpl.BEER_UPC_PATH_V1+beerDto.getUpc())
+                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+
+        BeerOrder beerOrder = createBeerOrder();
+        beerOrder.setCustomerRef("failed-validation");
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+
+        Awaitility.await().untilAsserted(()->{
+            BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+            assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION,foundOrder.getOrderStatus());
+        });
+
+        BeerOrder finalBeerOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+
+        assertNotNull(finalBeerOrder);
+        assertEquals(BeerOrderStatusEnum.VALIDATION_EXCEPTION,finalBeerOrder.getOrderStatus());
+
+    }
+
+    @Test
+    void new2PickedUp() throws JsonProcessingException, InterruptedException {
+        BeerDto beerDto = BeerDto.builder().id(beerId).upc("12345").build();
+        wireMockServer.stubFor(get(BeerServiceRestTemplateImpl.BEER_UPC_PATH_V1+beerDto.getUpc())
+                .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+
+        BeerOrder beerOrder = createBeerOrder();
+        System.out.println("Started with order id: "+beerOrder.getId());
+
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+        System.out.println("Started with savedBeerOrder id: "+savedBeerOrder.getId());
+
+        Awaitility.await().untilAsserted(()->{
+            BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+            assertEquals(BeerOrderStatusEnum.ALLOCATED,foundOrder.getOrderStatus());
+        });
+
+        Awaitility.await().untilAsserted(()->{
+            BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+            BeerOrderLine beerOrderLine = foundOrder.getBeerOrderLines().iterator().next();
+            assertEquals(beerOrderLine.getOrderQuantity(),beerOrderLine.getQuantityAllocated());
+        });
+
+        BeerOrder savedOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+        beerOrderManager.pickUpBeerOrder(savedOrder);
+
+        Awaitility.await().untilAsserted(()->{
+            BeerOrder foundOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+            assertEquals(BeerOrderStatusEnum.PICKED_UP,foundOrder.getOrderStatus());
+        });
+
+        BeerOrder finalBeerOrder = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+
+        assertNotNull(finalBeerOrder);
+        assertEquals(BeerOrderStatusEnum.PICKED_UP,finalBeerOrder.getOrderStatus());
+        finalBeerOrder.getBeerOrderLines().forEach(o ->
+                assertEquals(o.getOrderQuantity(),o.getQuantityAllocated())
+        );
 
     }
 
     private BeerOrder createBeerOrder(){
         BeerOrder beerOrder = BeerOrder.builder()
-                .customer(testCustomer).build();
+                .customer(testCustomer)
+                .customerRef("Test").build();
 
         Set<BeerOrderLine> beerOrderLines = new HashSet<>();
         beerOrderLines.add(

@@ -41,6 +41,11 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     }
 
     @Override
+    public void pickUpBeerOrder(BeerOrder beerOrder) {
+        sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEERORDER_PICKED_UP);
+    }
+
+    @Override
     public void processValidationResult(UUID id, Boolean isValid) {
         log.debug("Processing validation result for order id: "+id);
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(id);
