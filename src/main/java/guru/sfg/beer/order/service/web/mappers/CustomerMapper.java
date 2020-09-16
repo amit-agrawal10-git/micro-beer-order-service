@@ -14,21 +14,17 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package guru.sfg.beer.order.service.repositories;
 
-import guru.sfg.beer.order.service.domain.BeerOrder;
+package guru.sfg.beer.order.service.web.mappers;
+
 import guru.sfg.beer.order.service.domain.Customer;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import guru.sfg.brewery.model.CustomerDto;
+import org.mapstruct.Mapper;
 
-import java.util.List;
-import java.util.UUID;
+@Mapper(uses = {DateMapper.class})
+public interface CustomerMapper {
 
-/**
- * Created by jt on 2019-01-26.
- */
-public interface CustomerRepository extends JpaRepository<Customer, UUID> {
-    List<Customer> findAllByCustomerNameLike(String customerName);
+    CustomerDto customerToDto(Customer customer);
 
+    Customer dtoToCustomer(CustomerDto dto);
 }

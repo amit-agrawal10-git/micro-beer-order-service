@@ -5,8 +5,6 @@ import guru.sfg.brewery.model.ActionResult;
 import guru.sfg.brewery.model.BeerOrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -20,8 +18,8 @@ public class BeerOrderValidateListener {
 
     @JmsListener(destination = JMSConfig.VALIDATE_ORDER_REQUEST_QUEUE)
     public void listener(BeerOrderDto beerOrderDto){
-        Boolean isValid = true;
-        Boolean sendResponse = true;
+        boolean isValid = true;
+        boolean sendResponse = true;
 
         if(beerOrderDto.getCustomerRef().equals("failed-validation"))
             isValid = false;

@@ -14,21 +14,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package guru.sfg.beer.order.service.repositories;
 
-import guru.sfg.beer.order.service.domain.BeerOrder;
-import guru.sfg.beer.order.service.domain.Customer;
-import org.springframework.data.domain.Page;
+package guru.sfg.brewery.model;
+
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.UUID;
 
-/**
- * Created by jt on 2019-01-26.
- */
-public interface CustomerRepository extends JpaRepository<Customer, UUID> {
-    List<Customer> findAllByCustomerNameLike(String customerName);
+public class CustomerPagedList extends PageImpl<CustomerDto> {
+    public CustomerPagedList(List<CustomerDto> content, Pageable pageable, long total) {
+        super(content, pageable, total);
+    }
 
+    public CustomerPagedList(List<CustomerDto> content) {
+        super(content);
+    }
 }

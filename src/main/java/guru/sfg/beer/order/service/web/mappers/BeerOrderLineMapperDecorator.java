@@ -31,7 +31,6 @@ private BeerService beerService;
                     beerOrderLineDto.setBeerName(beerDto.getBeerName());
                     beerOrderLineDto.setBeerStyle(beerDto.getBeerStyle());
                     beerOrderLineDto.setPrice(beerDto.getPrice());
-                    beerOrderLineDto.setBeerId(beerDto.getId());
                 }
         );
         return beerOrderLineDto;

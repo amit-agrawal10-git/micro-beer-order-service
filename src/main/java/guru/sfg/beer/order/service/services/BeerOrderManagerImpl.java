@@ -130,6 +130,8 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     private void awaitForStatus(UUID beerOrderId, BeerOrderStatusEnum statusEnum) {
 
+  //      log.error("Inside empty function");
+
         AtomicBoolean found = new AtomicBoolean(false);
         AtomicInteger loopCount = new AtomicInteger(0);
 
@@ -159,6 +161,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                 }
             }
         }
+
     }
 
 

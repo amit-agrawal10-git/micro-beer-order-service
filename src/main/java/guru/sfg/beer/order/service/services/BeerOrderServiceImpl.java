@@ -23,8 +23,10 @@ import guru.sfg.beer.order.service.domain.BeerOrderStatusEnum;
 import guru.sfg.beer.order.service.repositories.BeerOrderRepository;
 import guru.sfg.beer.order.service.repositories.CustomerRepository;
 import guru.sfg.beer.order.service.web.mappers.BeerOrderMapper;
+import guru.sfg.beer.order.service.web.mappers.CustomerMapper;
 import guru.sfg.brewery.model.BeerOrderDto;
 import guru.sfg.brewery.model.BeerOrderPagedList;
+import guru.sfg.brewery.model.CustomerPagedList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -46,6 +48,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     private final BeerOrderRepository beerOrderRepository;
     private final CustomerRepository customerRepository;
     private final BeerOrderMapper beerOrderMapper;
+    private final CustomerMapper customerMapper;
     private final BeerOrderManager beerOrderManager;
 
     @Override
@@ -66,6 +69,18 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public CustomerPagedList listCustomers(Pageable pageable) {
+        Page<Customer> customerPage = customerRepository.findAll(pageable);
+            return new CustomerPagedList(customerPage
+                    .stream()
+                    .map(customerMapper::customerToDto)
+                    .collect(Collectors.toList()), PageRequest.of(
+                    customerPage.getPageable().getPageNumber(),
+                    customerPage.getPageable().getPageSize()),
+                    customerPage.getTotalElements());
     }
 
     @Transactional
