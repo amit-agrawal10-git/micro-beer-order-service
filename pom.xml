@@ -12,7 +12,9 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>micro-beer-order-service</name>
     <description>MSSC Beer Order Service</description>
-
+    <properties>
+        <docker.image.prefix>beerworks</docker.image.prefix>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
